@@ -21,3 +21,12 @@ mmap_generate_*.h
 
 node_modules/
 GEMINI.md
+
+# Development CLI
+cli/
+
+# Local agent skills and governance
+.agents/
+
+# Temporary release message
+patch_msg.txt
