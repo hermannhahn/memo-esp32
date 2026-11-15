@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Network Configuration</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="referrer no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/css">
+        :root {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #13151a;
+            --bg-card: rgba(26, 29, 36, 0.75);
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --input-bg: rgba(15, 17, 23, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* ========== Header Styles ========== */
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--bg-secondary), #1e1b4b);
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ========== Language Switcher ========== */
+        .language-switch select {
+            padding: 6px 12px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .language-switch select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ========== Container & Card ========== */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent);
+            padding-left: 0.75rem;
+        }
+
+        /* ========== Tabs ========== */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ========== Form Elements ========== */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-control[readonly] {
+            cursor: pointer;
+            opacity: 0.85;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* ========== Buttons ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #6366f1, #818cf8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #4f46e5, #6366f1);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-icon {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            width: auto;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.6rem 1rem;
+        }
+
+        .btn-icon:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* ========== Wi-Fi Lists ========== */
+        .wifi-list {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .wifi-list-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+
+        .wifi-item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .wifi-item-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--accent);
+            transform: translateX(3px);
+        }
+
+        .wifi-item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .wifi-item-signal {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ========== Saved Wi-Fi List ========== */
+        .saved-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .saved-item-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.85rem;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* ========== Alerts & Loading ========== */
+        .error-msg {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #1e1b4b;
+            border: 1px solid var(--accent);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 12px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 11, 13, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .loading-text {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="data:image/png;base64,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" style="width: 48px; height: 48px;" alt="Robot Logo">
+            <div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); letter-spacing: 1px;">MEMO ESP32</div>
+                <div id="firmware_version" style="font-size: 0.8rem; color: var(--text-muted);">v1.0</div>
+            </div>
+        </div>
+        <div class="language-switch">
+            <select id="language" onchange="changeLanguage()">
+                <option value="pt-PT">Português</option>
+                <option value="en-US">English</option>
+                <option value="es-ES">Español</option>
+                <option value="fr-FR">Français</option>
+                <option value="de-DE">Deutsch</option>
+                <option value="it-IT">Italiano</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('wifi')" data-lang="wifi_tab">Wi-Fi Config</button>
+            <button class="tab-btn" onclick="switchTab('advanced')" data-lang="advanced_tab">Advanced</button>
+        </div>
+
+        <!-- Wi-Fi Configuration Tab -->
+        <div id="wifi-tab" class="tab-content active">
+            <!-- Saved Wi-Fi List -->
+            <div id="saved_list_container" class="card" style="display: none;">
+                <h2 data-lang="saved_wifi">Saved Networks</h2>
+                <div id="saved_list"></div>
+            </div>
+
+            <!-- New Wi-Fi Connection -->
+            <div class="card">
+                <h2 data-lang="new_wifi">Configure New Wi-Fi</h2>
+                <div class="error-msg" style="display: none;" id="error"></div>
+                <form action="/submit" method="post" onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label for="ssid">SSID:</label>
+                        <input type="text" id="ssid" name="ssid" class="form-control" required readonly
+                            placeholder="Select a network below">
+                    </div>
+                    <div class="form-group">
+                        <label for="password" data-lang="password">Password:</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="password" name="password" class="form-control" style="padding-right: 40px;">
+                            <span id="togglePassword" style="position: absolute; right: 12px; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; user-select: none;">👁️</span>
+                        </div>
+                    </div>
+                    <button type="submit" id="button" class="btn btn-primary" data-lang="connect">Connect</button>
+                </form>
+
+                <div id="ap_list" class="wifi-list"></div>
+            </div>
+        </div>
+
+        <!-- Advanced Configuration Tab -->
+        <div id="advanced-tab" class="tab-content">
+            <div class="card">
+                <h2 data-lang="advanced_tab">Advanced Settings</h2>
+                <div class="error-msg" style="display: none;" id="advanced_error"></div>
+
+                <form action="/advanced/submit" method="post" onsubmit="submitAdvancedForm(event)">
+                    <!-- VAD Threshold -->
+                    <div class="form-group">
+                        <label>VAD RMS Real-time:</label>
+                        <div style="width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-bottom: 5px;">
+                            <div id="vad_rms_bar" style="width: 0%; height: 100%; background: linear-gradient(to right, var(--success), var(--warning), var(--danger)); transition: width 0.1s;"></div>
+                        </div>
+                        <label for="vad_threshold" data-lang="vad_threshold">Sensibilidade do Microfone (VAD
+                            RMS):</label>
+                        <input type="range" id="vad_threshold" name="vad_threshold" min="100" max="4000" step="10"
+                            value="1500" oninput="document.getElementById('vad_val').innerText = this.value"
+                            style="width:100%;">
+                        <div style="text-align: center; margin-top: 5px;"><span id="vad_val">1500</span></div>
+                    </div>
+
+                    <!-- Max TX Power -->
+                    <div class="form-group">
+                        <label for="max_tx_power" data-lang="max_tx_power">Wi-Fi Max TX Power:</label>
+                        <select id="max_tx_power" name="max_tx_power" class="form-control">
+                            <option value="8">2 dBm</option>
+                            <option value="20">5 dBm</option>
+                            <option value="28">7 dBm</option>
+                            <option value="34">8 dBm</option>
+                            <option value="44">11 dBm</option>
+                            <option value="52">13 dBm</option>
+                            <option value="56">14 dBm</option>
+                            <option value="60">15 dBm</option>
+                            <option value="66">16 dBm</option>
+                            <option value="72">18 dBm</option>
+                            <option value="80">20 dBm</option>
+                        </select>
+                    </div>
+
+                    <!-- Remember BSSID -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember_bssid" name="remember_bssid">
+                        <label for="remember_bssid" data-lang="remember_bssid">Remember BSSID when connecting</label>
+                    </div>
+
+                    <!-- Sleep Mode -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="sleep_mode" name="sleep_mode">
+                        <label for="sleep_mode" data-lang="sleep_mode">Enable Sleep Mode</label>
+                    </div>
+
+                    <button type="submit" id="advanced_button" class="btn btn-primary" style="margin-top: 1.5rem;"
+                        data-lang="save">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" data-lang="connecting">Connecting...</div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // ========== Global Variables ==========
+        const button = document.getElementById('button');
+        const error = document.getElementById('error');
+        const ssid = document.getElementById('ssid');
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        let support5G = false;
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                // Muda o ícone dependendo do estado
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
+
+        // ========== Translation Data (Main Block Only) ==========
+        const translations = {
+            'pt-PT': {
+                title: 'Configuração do Dispositivo IA',
+                saved_wifi: 'Redes Salvas',
+                new_wifi: 'Configurar Novo Wi-Fi',
+                password: 'Senha:',
+                connect: 'Conectar',
+                connecting: 'Conectando...',
+                select_wifi: 'Selecione a rede 2.4G abaixo:',
+                select_wifi_5g: 'Selecione a rede Wi-Fi abaixo:',
+                scanning: 'Escaneando redes...',
+                wifi_tab: 'Configuração Wi-Fi',
+                advanced_tab: 'Avançado',
+                ota_url: 'URL OTA Customizada:',
+                vad_threshold: 'Sensibilidade do Microfone (VAD RMS):',
+                max_tx_power: 'Potência Máxima TX:',
+                remember_bssid: 'Lembrar BSSID ao conectar',
+                sleep_mode: 'Habilitar Modo Economia (Sleep)',
+                save: 'Salvar Configurações'
+            },
+            'en-US': {
+                title: 'MEMO ESP32 Configuration',
+                saved_wifi: 'Saved Networks',
+                new_wifi: 'Configure New Wi-Fi',
+                password: 'Password:',
+                connect: 'Connect',
+                connecting: 'Connecting...',
+                select_wifi: 'Select 2.4G Wi-Fi below:',
+                select_wifi_5g: 'Select Wi-Fi network below:',
+                scanning: 'Scanning networks...',
+                wifi_tab: 'Wi-Fi Config',
+                advanced_tab: 'Advanced',
+                ota_url: 'Custom OTA URL:',
+                vad_threshold: 'Mic Sensitivity (VAD RMS):',
+                max_tx_power: 'Max TX Power:',
+                remember_bssid: 'Remember BSSID when connecting',
+                sleep_mode: 'Enable Sleep Mode',
+                save: 'Save Settings'
+            },
+            'es-ES': {
+                title: 'Configuración de Dispositivo IA',
+                saved_wifi: 'Redes Guardadas',
+                new_wifi: 'Configurar Nuevo Wi-Fi',
+                password: 'Contraseña:',
+                connect: 'Conectar',
+                connecting: 'Conectando...',
+                select_wifi: 'Seleccione red 2.4G abajo:',
+                select_wifi_5g: 'Seleccione red Wi-Fi abajo:',
+                scanning: 'Buscando redes...',
+                wifi_tab: 'Configuración Wi-Fi',
+                advanced_tab: 'Avanzado',
+                ota_url: 'URL OTA Personalizada:',
+                vad_threshold: 'Sensibilidad del Mic (VAD RMS):',
+                max_tx_power: 'Potencia Máxima TX:',
+                remember_bssid: 'Recordar BSSID al conectar',
+                sleep_mode: 'Activar Modo de Suspensión',
+                save: 'Guardar Ajustes'
+            },
+            'fr-FR': {
+                title: 'Configuration de l\'Appareil IA',
+                saved_wifi: 'Réseaux Enregistrés',
+                new_wifi: 'Configurer Nouveau Wi-Fi',
+                password: 'Mot de passe:',
+                connect: 'Se connecter',
+                connecting: 'Connexion...',
+                select_wifi: 'Sélectionnez un réseau 2.4G ci-dessous:',
+                select_wifi_5g: 'Sélectionnez un réseau Wi-Fi ci-dessous:',
+                scanning: 'Recherche de réseaux...',
+                wifi_tab: 'Configuration Wi-Fi',
+                advanced_tab: 'Avancé',
+                ota_url: 'URL OTA Personnalisée:',
+                vad_threshold: 'Sensibilité du Micro (VAD RMS):',
+                max_tx_power: 'Puissance TX Max:',
+                remember_bssid: 'Retenir le BSSID lors de la connexion',
+                sleep_mode: 'Activer le Mode Veille',
+                save: 'Enregistrer les paramètres'
+            },
+            'de-DE': {
+                title: 'KI-Gerätekonfiguration',
+                saved_wifi: 'Gespeicherte Netzwerke',
+                new_wifi: 'Neues Wi-Fi konfigurieren',
+                password: 'Passwort:',
+                connect: 'Verbinden',
+                connecting: 'Verbinde...',
+                select_wifi: 'Wählen Sie unten 2.4G Wi-Fi:',
+                select_wifi_5g: 'Wählen Sie unten ein Wi-Fi-Netzwerk:',
+                scanning: 'Suche Netzwerke...',
+                wifi_tab: 'Wi-Fi-Konfiguration',
+                advanced_tab: 'Erweitert',
+                ota_url: 'Benutzerdefinierte OTA-URL:',
+                vad_threshold: 'Mikrofonempfindlichkeit (VAD RMS):',
+                max_tx_power: 'Maximale Sendeleistung TX:',
+                remember_bssid: 'BSSID beim Verbinden merken',
+                sleep_mode: 'Schlafmodus aktivieren',
+                save: 'Einstellungen speichern'
+            },
+            'it-IT': {
+                title: 'Configurazione del Dispositivo IA',
+                saved_wifi: 'Reti Salvate',
+                new_wifi: 'Configura Nuovo Wi-Fi',
+                password: 'Password:',
+                connect: 'Connetti',
+                connecting: 'Connessione in corso...',
+                select_wifi: 'Seleziona rete 2.4G sotto:',
+                select_wifi_5g: 'Seleziona rete Wi-Fi sotto:',
+                scanning: 'Ricerca reti...',
+                wifi_tab: 'Configurazione Wi-Fi',
+                advanced_tab: 'Avanzato',
+                ota_url: 'URL OTA Personalizzato:',
+                vad_threshold: 'Sensibilità Mic (VAD RMS):',
+                max_tx_power: 'Potenza TX Massima:',
+                remember_bssid: 'Ricorda BSSID alla connessione',
+                sleep_mode: 'Abilita Modalità Sospensione',
+                save: 'Salva Impostazioni'
+            }
+        };
+
+        // ========== Helper Functions ==========
+        function changeLanguage() {
+            const lang = document.getElementById('language').value;
+            if (!translations[lang]) {
+                document.getElementById('language').value = 'en-US';
+                return changeLanguage();
+            }
+
+            document.title = translations[lang].title;
+
+            document.querySelectorAll('[data-lang]').forEach(element => {
+                const key = element.getAttribute('data-lang');
+                element.textContent = translations[lang][key];
+            });
+
+            document.querySelectorAll('[data-lang-value]').forEach(element => {
+                const key = element.getAttribute('data-lang-value');
+                element.value = translations[lang][key];
+            });
+
+            const apList = document.getElementById('ap_list');
+            const wifiTitle = apList.querySelector('.wifi-list-title');
+            if (wifiTitle) {
+                wifiTitle.textContent = support5G ? translations[lang].select_wifi_5g : translations[lang].select_wifi;
+            }
+
+            localStorage.setItem('preferred_language', lang);
+        }
+
+        // ========== Wi-Fi List Management ==========
+        function renderSavedList(data) {
+            const savedListContainer = document.getElementById('saved_list_container');
+            const savedList = document.getElementById('saved_list');
+            savedList.innerHTML = '';
+
+            data.forEach((ssidName, index) => {
+                const div = document.createElement('div');
+                div.className = 'saved-item';
+
+                let html = `<span>🔑 <strong>${ssidName}</strong></span>`;
+                html += `<div class="saved-item-actions">`;
+                if (index > 0) {
+                    html += `<button type="button" class="action-btn" onclick="setDefaultItem(this, ${index})">▲</button>`;
+                }
+                html += `<button type="button" class="action-btn delete" onclick="deleteItem(this, ${index})">✕</button>`;
+                html += `</div>`;
+
+                div.innerHTML = html;
+                savedList.appendChild(div);
+            });
+
+            savedListContainer.style.display = data.length > 0 ? 'block' : 'none';
+        }
+
+        function deleteItem(item, index) {
+            item.disabled = true;
+            fetch('/saved/delete?index=' + index)
+                .then(response => response.json())
+                .then(() => loadSavedList());
+        }
+
+        function setDefaultItem(item, index) {
+            item.disabled = true;
+            fetch('/saved/set_default?index=' + index)
+                .then(response => response.json())
+                .then(() => loadSavedList());
+        }
+
+        function loadSavedList() {
+            fetch('/saved/list')
+                .then(response => response.json())
+                .then(data => renderSavedList(data));
+        }
+
+        function loadAPList() {
+            if (button.disabled) return;
+
+            const lang = document.getElementById('language').value;
+            const apList = document.getElementById('ap_list');
+            const hasExistingAPs = apList.querySelector('.wifi-item-card') !== null;
+
+            if (!hasExistingAPs) {
+                apList.innerHTML = '<div class="wifi-list-title">' + translations[lang].scanning + '</div>';
+            }
+
+            fetch('/scan')
+                .then(response => response.json())
+                .then(data => {
+                    support5G = data.support_5g;
+                    const selectText = support5G ? translations[lang].select_wifi_5g : translations[lang].select_wifi;
+                    apList.innerHTML = '<div class="wifi-list-title">' + selectText + '</div>';
+
+                    data.aps.forEach(ap => {
+                        const card = document.createElement('div');
+                        card.className = 'wifi-item-card';
+
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'wifi-item-info';
+                        infoDiv.innerHTML = `<span>${ap.authmode === 0 ? '🔓' : '🔒'}</span> <strong>${ap.ssid}</strong>`;
+
+                        const signalSpan = document.createElement('span');
+                        signalSpan.className = 'wifi-item-signal';
+                        signalSpan.textContent = `${ap.rssi} dBm`;
+
+                        card.appendChild(infoDiv);
+                        card.appendChild(signalSpan);
+
+                        card.addEventListener('click', () => {
+                            ssid.value = ap.ssid;
+                            document.getElementById('password').focus();
+                        });
+
+                        apList.appendChild(card);
+                    });
+
+                    setTimeout(loadAPList, 5000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    setTimeout(loadAPList, 5000);
+                });
+        }
+
+        // ========== Form Submission ==========
+        async function submitForm(event) {
+            event.preventDefault();
+            button.disabled = true;
+            error.style.display = 'none';
+            error.textContent = '';
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('show');
+
+            const payload = {
+                ssid: ssid.value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'Connection failed');
+                }
+                window.location.href = '/done.html';
+            } catch (err) {
+                loadingOverlay.classList.remove('show');
+                error.textContent = err.message;
+                error.style.display = 'block';
+                button.disabled = false;
+            }
+        }
+
+        async function submitAdvancedForm(event) {
+            event.preventDefault();
+            const advancedButton = document.getElementById('advanced_button');
+            const advancedError = document.getElementById('advanced_error');
+            advancedButton.disabled = true;
+            advancedError.style.display = 'none';
+            advancedError.textContent = '';
+
+            const config = {
+                vad_threshold: parseInt(document.getElementById('vad_threshold').value),
+                max_tx_power: parseInt(document.getElementById('max_tx_power').value),
+                remember_bssid: document.getElementById('remember_bssid').checked,
+                sleep_mode: document.getElementById('sleep_mode').checked
+            };
+
+            try {
+                const response = await fetch('/advanced/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'Save failed');
+                }
+
+                advancedButton.disabled = false;
+                showToast(document.getElementById('language').value === 'pt-PT' ? 'Configuração salva!' : 'Configuration saved!');
+            } catch (err) {
+                advancedError.textContent = err.message;
+                advancedError.style.display = 'block';
+                advancedButton.disabled = false;
+            }
+        }
+
+        // ========== UI Functions ==========
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+            if (tabName === 'advanced') {
+                startVadRmsPolling();
+            } else {
+                stopVadRmsPolling();
+            }
+        }
+
+        let vadRmsInterval = null;
+
+        function startVadRmsPolling() {
+            if (vadRmsInterval) return;
+            vadRmsInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/advanced/vad_rms');
+                    const data = await response.json();
+                    let maxRms = 4000;
+                    let percent = (data.rms / maxRms) * 100;
+                    if (percent > 100) percent = 100;
+                    document.getElementById('vad_rms_bar').style.width = percent + '%';
+                } catch (e) {
+                    console.error('Failed to fetch VAD RMS', e);
+                }
+            }, 250);
+        }
+
+        function stopVadRmsPolling() {
+            if (vadRmsInterval) {
+                clearInterval(vadRmsInterval);
+                vadRmsInterval = null;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        async function loadAdvancedConfig() {
+            try {
+                const response = await fetch('/advanced/config');
+                const data = await response.json();
+
+                if (data.version) {
+                    document.getElementById('firmware_version').innerText = 'v' + data.version;
+                }
+                if (data.vad_threshold) {
+                    document.getElementById('vad_threshold').value = data.vad_threshold;
+                    document.getElementById('vad_val').innerText = data.vad_threshold;
+                }
+                if (data.max_tx_power) {
+                    document.getElementById('max_tx_power').value = data.max_tx_power;
+                }
+                if (data.remember_bssid !== undefined) {
+                    document.getElementById('remember_bssid').checked = data.remember_bssid;
+                }
+                if (data.sleep_mode !== undefined) {
+                    document.getElementById('sleep_mode').checked = data.sleep_mode;
+                }
+            } catch (error) {
+                console.error('Error loading advanced config:', error);
+            }
+        }
+
+        // ========== Initialization ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            const browserLang = navigator.language || navigator.userLanguage;
+
+            let defaultLang = 'en-US';
+            if (browserLang.startsWith('pt')) defaultLang = 'pt-PT';
+            else if (browserLang.startsWith('es')) defaultLang = 'es-ES';
+            else if (browserLang.startsWith('fr')) defaultLang = 'fr-FR';
+            else if (browserLang.startsWith('de')) defaultLang = 'de-DE';
+            else if (browserLang.startsWith('it')) defaultLang = 'it-IT';
+
+            const savedLang = langParam ||
+                localStorage.getItem('preferred_language') ||
+                defaultLang;
+
+            document.getElementById('language').value = savedLang;
+            changeLanguage();
+            loadSavedList();
+            loadAPList();
+            loadAdvancedConfig();
+        });
+
+        ssid.addEventListener('touchstart', () => {
+            ssid.removeAttribute('readonly');
+            ssid.focus();
+        }, { once: true });
+    </script>
+</body>
+
+</html>

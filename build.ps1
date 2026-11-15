@@ -72,17 +72,18 @@ Copy-Item -Path $mergedBin -Destination $destMerged -Force
 Write-Host "Merged binary copied: $destMerged" -ForegroundColor Green
 
 $appBin = Join-Path $projectDir "build\memo-esp32.bin"
+$legacyAppBin = Join-Path $projectDir "build\xiaozhi.bin"
 $destApp = Join-Path $releasesDir "memo-esp32-app-v$version.bin"
+
 if (Test-Path $appBin) {
     Copy-Item -Path $appBin -Destination $destApp -Force
     Write-Host "App binary copied (OTA): $destApp" -ForegroundColor Green
+} elseif (Test-Path $legacyAppBin) {
+    Copy-Item -Path $legacyAppBin -Destination $destApp -Force
+    Write-Host "App binary copied (OTA from xiaozhi.bin): $destApp" -ForegroundColor Green
 } else {
-    # Check for xiaozhi.bin fallback if project name was not updated in build cache
-    $legacyAppBin = Join-Path $projectDir "build\xiaozhi.bin"
-    if (Test-Path $legacyAppBin) {
-        Copy-Item -Path $legacyAppBin -Destination $destApp -Force
-        Write-Host "App binary copied (OTA from xiaozhi.bin): $destApp" -ForegroundColor Green
-    }
+    Write-Error "Build failed: App binary (memo-esp32.bin or xiaozhi.bin) not found in build/"
+    exit 1
 }
 
 Write-Host ""

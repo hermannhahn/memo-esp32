@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WiFi Configuration</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #13151a;
+            --bg-card: rgba(26, 29, 36, 0.85);
+            --accent: #6366f1;
+            --text-main: #f3f4f6;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .checkmark {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 2rem;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .message p {
+            margin-bottom: 0.5rem;
+        }
+
+        .message p.sub {
+            font-size: 0.95rem;
+            color: #9ca3af;
+        }
+
+        /* Checkmark Animation */
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: var(--success);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: var(--success);
+            stroke-width: 3;
+            fill: none;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+        
+        <div class="message">
+            <p>Conexão enviada com sucesso!</p>
+            <p class="sub">Configuration successful! The device will now connect.</p>
+        </div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                fetch('/exit', {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Exit config mode request sent');
+                    } else {
+                        console.error('Failed to send exit request');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

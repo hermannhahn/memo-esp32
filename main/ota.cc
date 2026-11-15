@@ -64,7 +64,12 @@ std::string Ota::GetCheckVersionUrl() {
         url.clear();
     }
     if (url.empty()) {
+#ifdef CONFIG_OTA_URL
         url = CONFIG_OTA_URL;
+#endif
+        if (url.empty()) {
+            url = "https://api.tenclass.net/xiaozhi/ota/";
+        }
     }
     return url;
 }
@@ -248,6 +253,18 @@ NetworkResult<> Ota::CheckVersion() {
 
     has_new_version_ = false;
     cJSON *firmware = cJSON_GetObjectItem(root, "firmware");
+    if (!cJSON_IsObject(firmware)) {
+        cJSON *firmwares = cJSON_GetObjectItem(root, "firmwares");
+        if (cJSON_IsObject(firmwares)) {
+            firmware = cJSON_GetObjectItem(firmwares, "memo-esp32");
+            if (!cJSON_IsObject(firmware)) {
+                firmware = cJSON_GetObjectItem(firmwares, board.GetBoardType().c_str());
+            }
+            if (!cJSON_IsObject(firmware) && cJSON_GetArraySize(firmwares) > 0) {
+                firmware = cJSON_GetArrayItem(firmwares, 0);
+            }
+        }
+    }
     if (cJSON_IsObject(firmware)) {
         cJSON *version = cJSON_GetObjectItem(firmware, "version");
         if (cJSON_IsString(version)) {
@@ -314,7 +331,7 @@ bool Ota::Upgrade(const std::string& firmware_url, std::function<void(int progre
     std::string image_header;
 
     auto network = Board::GetInstance().GetNetwork();
-    auto http = network->CreateHttp(0);
+    auto http = network->CreateHttp(5);
     if (auto opened = http->Open("GET", firmware_url); !opened) {
         ESP_LOGE(TAG, "Failed to open HTTP connection: %s", opened.error().ToString().c_str());
         return false;
