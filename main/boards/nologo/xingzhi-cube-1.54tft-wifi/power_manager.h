@@ -18,6 +18,7 @@ private:
     uint32_t battery_level_ = 0;
     bool is_charging_ = false;
     bool is_low_battery_ = false;
+    bool battery_present_ = false;
     int ticks_ = 0;
     const int kBatteryAdcInterval = 60;
     const int kBatteryAdcDataCount = 3;
@@ -64,6 +65,7 @@ private:
             average_adc += value;
         }
         average_adc /= adc_values_.size();
+        battery_present_ = average_adc > 1800;
 
         // 定义电池电量区间
         const struct {
@@ -174,6 +176,10 @@ public:
 
     uint8_t GetBatteryLevel() {
         return battery_level_;
+    }
+
+    bool IsBatteryPresent() {
+        return battery_present_;
     }
 
     void OnLowBatteryStatusChanged(std::function<void(bool)> callback) {

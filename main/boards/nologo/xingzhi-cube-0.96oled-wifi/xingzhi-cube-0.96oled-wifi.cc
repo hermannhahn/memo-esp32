@@ -48,7 +48,7 @@ private:
         rtc_gpio_set_direction(GPIO_NUM_21, RTC_GPIO_MODE_OUTPUT_ONLY);
         rtc_gpio_set_level(GPIO_NUM_21, 1);
 
-        power_save_timer_ = new PowerSaveTimer(-1, 60, 300);
+        power_save_timer_ = new PowerSaveTimer(-1, 60, -1);
         power_save_timer_->OnEnterSleepMode([this]() {
             GetDisplay()->SetPowerSaveMode(true);
         });
@@ -203,6 +203,9 @@ public:
     }
 
     virtual bool GetBatteryLevel(int& level, bool& charging, bool& discharging) override {
+        if (!power_manager_->IsBatteryPresent()) {
+            return false;
+        }
         static bool last_discharging = false;
         charging = power_manager_->IsCharging();
         discharging = power_manager_->IsDischarging();
