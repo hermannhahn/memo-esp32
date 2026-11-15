@@ -92,20 +92,25 @@ if (-not $currentVersion) {
 Write-Host "Version to publish: v$currentVersion" -ForegroundColor Green
 
 # 3. Validate binaries exist in releases/
-$binFullPath = Join-Path $projectDir "releases\memo-esp32-v$currentVersion.bin"
-$appFullPath = Join-Path $projectDir "releases\memo-esp32-app-v$currentVersion.bin"
+$releasesDir = Join-Path $projectDir "releases"
+$binFiles = Get-ChildItem -Path $releasesDir -Filter "memo-esp32-v$currentVersion*.bin" -ErrorAction SilentlyContinue
+$appFiles = Get-ChildItem -Path $releasesDir -Filter "memo-esp32-app-v$currentVersion*.bin" -ErrorAction SilentlyContinue
 
-if (-not (Test-Path $binFullPath)) {
-    Write-Error "[ERROR] Merged binary not found at: $binFullPath`nMake sure to run build.bat before publishing."
+if (-not $binFiles -or $binFiles.Count -eq 0) {
+    Write-Error "[ERROR] No merged binary found in releases/ matching memo-esp32-v$currentVersion*.bin`nMake sure to run build.bat before publishing."
     exit 1
 }
 
-if (-not (Test-Path $appFullPath)) {
-    Write-Error "[ERROR] App binary (OTA) not found at: $appFullPath`nMake sure to run build.bat before publishing."
+if (-not $appFiles -or $appFiles.Count -eq 0) {
+    Write-Error "[ERROR] No app binary (OTA) found in releases/ matching memo-esp32-app-v$currentVersion*.bin`nMake sure to run build.bat before publishing."
     exit 1
 }
 
-Write-Host "Release binaries verified: OK." -ForegroundColor Green
+$releaseAssets = @()
+foreach ($f in $binFiles) { $releaseAssets += $f.FullName }
+foreach ($f in $appFiles) { $releaseAssets += $f.FullName }
+
+Write-Host "Release binaries verified ($($releaseAssets.Count) files found): OK." -ForegroundColor Green
 
 # 4. Merge development into main and push
 Write-Host ""
@@ -181,7 +186,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "[GitHub] Creating GitHub Release v$currentVersion..." -ForegroundColor Yellow
 
-gh release create "v$currentVersion" $binFullPath $appFullPath `
+gh release create "v$currentVersion" @releaseAssets `
     --title "Release v$currentVersion" `
     --notes "Firmware MEMO ESP32 v$currentVersion" `
     --repo $repoOwnerName

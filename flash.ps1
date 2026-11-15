@@ -2,7 +2,7 @@
 # Flashes the compiled firmware to the ESP32 board via esptool.
 
 param (
-    [string]$Port = "COM4",
+    [string]$Port = "",
     [string]$Binary = "",
     [int]$Baud = 921600
 )
@@ -10,6 +10,20 @@ param (
 $ErrorActionPreference = "Stop"
 
 $projectDir = $PSScriptRoot
+
+# Auto-detect COM port if not specified
+if (-not $Port) {
+    $availablePorts = [System.IO.Ports.SerialPort]::GetPortNames()
+    if ($availablePorts.Count -eq 1) {
+        $Port = $availablePorts[0]
+        Write-Host "Auto-detected serial port: $Port" -ForegroundColor Green
+    } elseif ($availablePorts.Count -gt 1) {
+        $Port = $availablePorts[0]
+        Write-Host "Multiple ports found, using first: $Port (available: $($availablePorts -join ', '))" -ForegroundColor Yellow
+    } else {
+        $Port = "COM3"
+    }
+}
 
 # Read version from CMakeLists.txt
 $cmakeLines = Get-Content (Join-Path $projectDir "CMakeLists.txt")
@@ -22,10 +36,13 @@ foreach ($line in $cmakeLines) {
 }
 
 if (-not $Binary) {
+    $hwBin = Get-ChildItem -Path (Join-Path $projectDir "releases") -Filter "memo-esp32-v$version-*.bin" -ErrorAction SilentlyContinue | Select-Object -First 1
     $releaseBin = Join-Path $projectDir "releases\memo-esp32-v$version.bin"
     $buildBin = Join-Path $projectDir "build\merged-binary.bin"
 
-    if (Test-Path $releaseBin) {
+    if ($hwBin -and (Test-Path $hwBin.FullName)) {
+        $Binary = $hwBin.FullName
+    } elseif (Test-Path $releaseBin) {
         $Binary = $releaseBin
     } elseif (Test-Path $buildBin) {
         $Binary = $buildBin

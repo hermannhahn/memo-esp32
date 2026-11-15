@@ -6,6 +6,7 @@
 param (
     [string]$Board = "nologo/xingzhi-cube-0.96oled-wifi",
     [string]$Variant = "xingzhi-cube-0.96oled-wifi",
+    [string]$Hardware = "n16r8-oled098",
     [string]$Language = "en-US"
 )
 
@@ -67,29 +68,40 @@ if (-not (Test-Path $mergedBin)) {
 $releasesDir = Join-Path $projectDir "releases"
 New-Item -ItemType Directory -Force -Path $releasesDir | Out-Null
 
+$hwMergedName = "memo-esp32-v$version-$Hardware.bin"
+$hwAppName = "memo-esp32-app-v$version-$Hardware.bin"
+$destMergedHw = Join-Path $releasesDir $hwMergedName
+$destAppHw = Join-Path $releasesDir $hwAppName
+
+Copy-Item -Path $mergedBin -Destination $destMergedHw -Force
+Write-Host "Hardware merged binary (cable flash): $destMergedHw" -ForegroundColor Green
+
 $destMerged = Join-Path $releasesDir "memo-esp32-v$version.bin"
 Copy-Item -Path $mergedBin -Destination $destMerged -Force
-Write-Host "Merged binary copied: $destMerged" -ForegroundColor Green
 
 $appBin = Join-Path $projectDir "build\memo-esp32.bin"
 $legacyAppBin = Join-Path $projectDir "build\xiaozhi.bin"
-$destApp = Join-Path $releasesDir "memo-esp32-app-v$version.bin"
+$appSource = $null
 
 if (Test-Path $appBin) {
-    Copy-Item -Path $appBin -Destination $destApp -Force
-    Write-Host "App binary copied (OTA): $destApp" -ForegroundColor Green
+    $appSource = $appBin
 } elseif (Test-Path $legacyAppBin) {
-    Copy-Item -Path $legacyAppBin -Destination $destApp -Force
-    Write-Host "App binary copied (OTA from xiaozhi.bin): $destApp" -ForegroundColor Green
+    $appSource = $legacyAppBin
 } else {
     Write-Error "Build failed: App binary (memo-esp32.bin or xiaozhi.bin) not found in build/"
     exit 1
 }
 
+Copy-Item -Path $appSource -Destination $destAppHw -Force
+Write-Host "Hardware app binary (OTA update):    $destAppHw" -ForegroundColor Green
+
+$destApp = Join-Path $releasesDir "memo-esp32-app-v$version.bin"
+Copy-Item -Path $appSource -Destination $destApp -Force
+
 Write-Host ""
 Write-Host "=== Build Completed Successfully! ===" -ForegroundColor Green
-Write-Host "Merged binary (Cable flash): $destMerged" -ForegroundColor Green
-Write-Host "App binary (OTA update):    $destApp" -ForegroundColor Green
+Write-Host "Primary Release Target: $destMergedHw" -ForegroundColor Green
+Write-Host "Primary OTA Target:     $destAppHw" -ForegroundColor Green
 Write-Host ""
 Write-Host "To flash to the ESP32 board, run: flash.bat" -ForegroundColor Cyan
 Write-Host "To publish the release, run:      publish.bat" -ForegroundColor Cyan

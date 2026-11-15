@@ -1,12 +1,16 @@
 {
     "firmwares": {
         "memo-esp32": {
-            "version": "0.1.0",
-            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.1.0/memo-esp32-app-v0.1.0.bin"
+            "version": "0.0.1",
+            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.0.1/memo-esp32-app-v0.0.1-n16r8-oled098.bin"
+        },
+        "n16r8-oled098": {
+            "version": "0.0.1",
+            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.0.1/memo-esp32-app-v0.0.1-n16r8-oled098.bin"
         },
         "xingzhi-cube-0.96oled-wifi": {
-            "version": "0.1.0",
-            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.1.0/memo-esp32-app-v0.1.0.bin"
+            "version": "0.0.1",
+            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.0.1/memo-esp32-app-v0.0.1-n16r8-oled098.bin"
         }
     }
 }
