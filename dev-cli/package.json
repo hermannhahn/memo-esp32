@@ -1,0 +1,19 @@
+{
+  "name": "memo-esp32-cli",
+  "version": "0.1.0",
+  "description": "CLI tool to manage the MEMO ESP32 Firmware",
+  "main": "./bin/cli.js",
+  "bin": {
+    "memo": "./bin/cli.js",
+    "memo-esp32": "./bin/cli.js",
+    "esp32": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hermann H. Hahn",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "firmwares": {
+        "memo-esp32": {
+            "version": "0.1.0",
+            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.1.0/memo-esp32-app-v0.1.0.bin"
+        },
+        "xingzhi-cube-0.96oled-wifi": {
+            "version": "0.1.0",
+            "url": "https://github.com/hermannhahn/memo-esp32/releases/download/v0.1.0/memo-esp32-app-v0.1.0.bin"
+        }
+    }
+}
